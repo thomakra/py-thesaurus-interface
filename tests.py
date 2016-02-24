@@ -3,20 +3,24 @@ from __future__ import absolute_import
 import unittest
 import os, json, shutil
 from pkg_resources import resource_filename
+from mock import Mock, patch
 
 import pythesint as pti
 
 class PythesintTest(unittest.TestCase):
 
     # Missing tests
-    #def test_write_json
-    #def test_write_json_to_path
+    # def test_vocabularies
+    # test that the vocabularies actually contain what we want
+
+    # def test_write_json
+    # def test_write_json_to_path
 
     def test_get_list(self):
         self.assertIsInstance(pti.get_list('gcmd_platforms'), list)
         self.assertIsInstance(pti.get_list(pti.GCMD_PLATFORMS), list)
 
-    #def test_get_list_from_path
+    # def test_get_list_from_path
 
     def test_get_gcmd_instruments_list(self):
        self.assertIsInstance(pti.get_gcmd_instruments(), list)
@@ -105,14 +109,12 @@ class PythesintTest(unittest.TestCase):
         self.assertRaises(IndexError, pti.get_gcmd_instrument, item)
 
     def test_update(self):
-        pti.update_vocabulary('gcmd_instruments')
-        pti.update_vocabulary('gcmd_platforms')
-        pti.update_vocabulary('gcmd_science_keywords')
-        pti.update_vocabulary('gcmd_data_centers')
-        pti.update_vocabulary('gcmd_locations')
-        pti.update_vocabulary('cf_standard_names')
-        pti.update_vocabulary('iso19115_topic_categories')
-        pti.update_vocabulary('wkv_variables')
+        for vocab in pti.pythesint.vocabularies:
+            mock = Mock()
+            with patch.dict(pti.pythesint.vocabularies, {vocab:mock}):
+                pti.update_vocabulary(vocab)
+                mock.update.assert_called_once_with()
+
 
 if __name__ == "__main__":
     unittest.main()
