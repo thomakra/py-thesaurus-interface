@@ -77,8 +77,14 @@ class PythesintTest(unittest.TestCase):
 
     def test_get_iso19115_topic_category(self):
         item = 'Oceans'
-        self.assertIsInstance(pti.get_keyword('iso19115_topic_categories', item), dict)
-        self.assertIsInstance(pti.get_keyword(pti.ISO19115_TOPIC_CATEGORIES, item), dict)
+        oceans = {'iso_topic_category': 'Oceans'}
+        mock = Mock()
+        with patch.dict(pti.pythesint.vocabularies,
+                        {pti.ISO19115_TOPIC_CATEGORIES: mock}):
+            mock.find_keyword.return_value = oceans
+            self.assertIsInstance(pti.get_keyword('iso19115_topic_categories', item), dict)
+            self.assertIsInstance(pti.get_keyword(pti.ISO19115_TOPIC_CATEGORIES, item), dict)
+            mock.find_keyword.assert_called_with(item)
         self.assertIsInstance(pti.get_iso19115_topic_category(item), dict)
 
     def test_get_vertical_resolution_range(self):
